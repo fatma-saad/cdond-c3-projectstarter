@@ -133,7 +133,7 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
-  deploy-backend-infrastructure:
+  deploy-back-end-infrastructure:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -165,7 +165,7 @@ jobs:
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
-  deploy-frontend-infrastructure:
+  deploy-front-end-infrastructure:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -218,3 +218,13 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+      - deploy-back-end-infrastructure:
+          requires: [test-backend, scan-backend]
+          filters:
+            branches:
+              only: [main]
+      - deploy-front-end-infrastructure:
+          requires: [test-frontend, scan-frontend]
+          filters:
+            branches:
+              only: [main]
