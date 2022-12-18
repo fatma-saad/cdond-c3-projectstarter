@@ -220,6 +220,6 @@ workflows:
       - scan-frontend:
           requires: [build-frontend]
       - deploy-back-end-infrastructure:
-          requires: [test-backend, scan-backend]
+          requires: [test-backend]
       - deploy-front-end-infrastructure:
           requires: [test-frontend, scan-frontend]
