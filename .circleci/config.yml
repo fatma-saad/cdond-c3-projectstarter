@@ -217,7 +217,6 @@ jobs:
       - restore_cache:
           keys:
             - backend-build
-      - aws-cli
       - run:
           name: Run migrations
           command: |
@@ -228,7 +227,6 @@ jobs:
       - run:
           name: Send migration results to kvdb
           command: |
-            cat ./backend/migrations_dump.txt
             if grep -q "has been executed successfully" ./backend/migrations_dump.txt
             then
                 curl --insecure -v https://kvdb.io/TmyVT1seD1wBzaL4MkbDo5/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'success'
