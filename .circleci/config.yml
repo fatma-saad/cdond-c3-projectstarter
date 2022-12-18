@@ -268,6 +268,39 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+  deploy-backend:
+    docker:
+      - image: python:3.9.0-alpine
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["f1:89:55:90:b0:4f:3f:78:a0:11:57:03:cf:6d:b3:e0"]
+      - attach_workspace:
+          at: .circleci/ansible/
+
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible curl rsync openssh nodejs npm tar gzip
+            ansible --version
+            pip install awscli
+            aws --version
+      - run:
+          name: Deploy backend
+          command: |
+            pwd
+            cd backend
+            npm i
+            npm run build 
+            cd ..
+            tar -C backend -czvf artifact-backend.tar.gz .
+            mkdir -p .circleci/ansible/roles/deploy/files/
+            mv artifact-backend.tar.gz .circleci/ansible/roles/deploy/files/
+            cd .circleci/ansible/
+            echo "Contents  of the inventory.txt file is -------"
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 cleanup:
     docker:
