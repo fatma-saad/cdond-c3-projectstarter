@@ -62,7 +62,10 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
   build-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -79,6 +82,10 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}          
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -95,7 +102,10 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-                
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}                
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -112,7 +122,10 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-          
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}          
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -127,6 +140,10 @@ jobs:
             npm install
             npm audit fix --force
             npm audit --audit-level=critical
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}            
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -142,6 +159,10 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}            
   deploy-back-end-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -173,7 +194,8 @@ jobs:
             - inventory.txt
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
   deploy-front-end-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -194,6 +216,8 @@ jobs:
 
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
   configure-infrastructure:
     docker:
       - image: python:3.9.0-alpine
@@ -216,6 +240,8 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}          
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
@@ -240,6 +266,8 @@ jobs:
             fi
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-frontend:
     docker:
@@ -325,10 +353,11 @@ jobs:
           name: Frontend smoke test.
           command: |
             export URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com/#/employees"            
-            if curl ${URL} | grep "Welcome"; then return 1; else return 1; fi
+            if curl ${URL} | grep "Welcome"; then return 0; else return 1; fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 cleanup:
     docker:
       # Docker image here
