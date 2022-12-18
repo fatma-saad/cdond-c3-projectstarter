@@ -223,14 +223,12 @@ jobs:
             cd backend
             npm install
             npm run migrations > migrations_dump.txt
-            cat migrations_dump.txt
       - run:
           name: Send migration results to kvdb
           command: |
             cat ./backend/migrations_dump.txt
             if grep -q "has been executed successfully" ./backend/migrations_dump.txt
             then
-                echo "DB migration was successful, Updating KVDB..."
                 curl --insecure -v https://kvdb.io/9GE4jRtKznmVKRfvdBABBe/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d 'success'
             fi
       - destroy-environment:
