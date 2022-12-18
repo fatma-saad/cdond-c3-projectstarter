@@ -231,14 +231,6 @@ jobs:
       - run:
           name: Run migrations
           command: |
-            echo ENVIRONMENT=production > "backend/.env"
-            echo TYPEORM_CONNECTION=postgres >> "backend/.env"
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
-            echo NODE_ENV=production >> "backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
@@ -250,7 +242,7 @@ jobs:
           command: |
             if grep -q "has been executed successfully" ./backend/migrations_dump.txt
             then
-                curl --insecure -v https://kvdb.io/XsgrYuyPESbxCcte4sLxEM/migration_${CIRCLE_WORKFLOW_ID:0:7\}  -d '1'
+                curl --insecure -v https://kvdb.io/TmyVT1seD1wBzaL4MkbDo5/migration_${CIRCLE_WORKFLOW_ID:0:7\}  -d '1'
             fi
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
