@@ -297,6 +297,8 @@ jobs:
             mkdir -p .circleci/ansible/roles/deploy/files/
             mv artifact-backend.tar.gz .circleci/ansible/roles/deploy/files/
             cd .circleci/ansible/
+            pwd
+            export ANSIBLE_HOST_KEY_CHECKING=False
             echo "Contents  of the inventory.txt file is -------"
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment:
