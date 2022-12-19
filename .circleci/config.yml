@@ -217,11 +217,12 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["f1:89:55:90:b0:4f:3f:78:a0:11:57:03:cf:6d:b3:e0"]
       - attach_workspace:
-          at: ~/
+          at: .circleci/ansible/
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache tar gzip ansible aws-cli
+            apk add --update ansible
+            ansible --version
       - run:
           name: Configure server
           command: |
