@@ -217,7 +217,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["f1:89:55:90:b0:4f:3f:78:a0:11:57:03:cf:6d:b3:e0"]
       - attach_workspace:
-          at: .circleci/ansible/
+          at: .circleci/ansible
       - run:
           name: Install dependencies
           command: |
@@ -240,15 +240,8 @@ jobs:
             cat backend/.env           
             cd .circleci/ansible
             cat inventory.txt
-            ansible-playbook -i inventory.txt configure-server.yml 
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/backend            
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-          
-
+            ansible-playbook -i inventory.txt configure-server.yml           
+         
   run-migrations:
     docker:
       - image: circleci/node:13.8.0 # safest to use to avoid migration errors
