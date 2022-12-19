@@ -382,25 +382,29 @@ jobs:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+ 
+
   cleanup:
     docker:
       - image: amazon/aws-cli
     steps:
       - checkout
       - run:
-          name: Remove old Stack
+          name: Get old stack workflow id and remove stacks
           command: |
-            export oldWorkflowId=$(curl --insecure  https://kvdb.io/EnYWPspoKVKHgUmBKmDfaV/oldworkflow)
+            echo <<pipeline.parameters.workflow_id>>
+            export OldWorkflowID=<<pipeline.parameters.workflow_id>>
             export STACKS=$(aws cloudformation list-stacks \
             --query "StackSummaries[*].StackName" \
             --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
-            if [[ "${STACKS[@]}" =~ "${oldWorkflowId}" ]]
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
-                echo "----------cleaning up stacks------------"            
-                aws s3 rm "s3://udapeople-${oldWorkflowId}" --recursive
+              echo "----------cleaning up stacks------------"
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
                 aws cloudformation delete-stack --stack-name "udapeople-api-${oldWorkflowId}"
                 aws cloudformation delete-stack --stack-name "udapeople-front-${oldWorkflowId}"
-                curl --insecure  https://kvdb.io/EnYWPspoKVKHgUmBKmDfaV/oldworkflow  -d "${CIRCLE_WORKFLOW_ID:0:7}"
+            fi
+ 
 workflows:
   default:
     jobs:
