@@ -211,7 +211,7 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: python:3.9.0-alpine
+      - image: cytopia/ansible:latest-aws
     steps:
       - checkout
       - add_ssh_keys:
