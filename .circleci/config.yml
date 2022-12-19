@@ -304,8 +304,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints:
-            - 'f1:89:55:90:b0:4f:3f:78:a0:11:57:03:cf:6d:b3:e0'
+          fingerprints: ["f1:89:55:90:b0:4f:3f:78:a0:11:57:03:cf:6d:b3:e0"]
       - run:
           name: Install dependencies
           command: |
@@ -327,6 +326,7 @@ jobs:
             mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
             cd .circleci/ansible
             echo "Contents of the inventory.txt file is ------$(cat inventory.txt)"
+            export ANSIBLE_HOST_KEY_CHECKING=False            
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
