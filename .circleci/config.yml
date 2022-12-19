@@ -189,16 +189,14 @@ jobs:
           command: |
             echo $(aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
+            --filters Name=tag:aws:cloudformation:stack-name,Values=udapeople-api-${CIRCLE_WORKFLOW_ID:0:7} \
             --output text) >> ~/project/.circleci/ansible/inventory.txt
       - persist_to_workspace:
-          root: .circleci/ansible
+          root: ~/
           paths:
-            - inventory.txt
+            - project/.circleci/ansible/inventory.txt
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
   deploy-front-end-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -250,7 +248,7 @@ jobs:
             echo TYPEORM_PORT=$TYPEORM_PORT >> backend/.env
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
             cat backend/.env           
-            cd .circleci/ansible/
+            cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
       - persist_to_workspace:
