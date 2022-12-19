@@ -1,5 +1,9 @@
 version: 2.1
-
+parameters:
+  workflow_id:
+    type: string
+    default: '${CIRCLE_WORKFLOW_ID:0:7}'
+    
 commands:
 
   aws-cli:
