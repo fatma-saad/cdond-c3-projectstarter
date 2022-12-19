@@ -308,10 +308,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible curl rsync openssh nodejs npm tar gzip
-            ansible --version
-            pip install awscli
-            aws --version
+            apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
       - attach_workspace:
           at: .circleci/ansible/
       - run:
