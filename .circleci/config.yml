@@ -163,7 +163,8 @@ jobs:
       - run:
           name: Install tar Utility
           command: |
-            yum install -y tar gzip
+            sleep 1m 
+      - run: yum -y install tar gzip               
       - run:
           name:  back-end Infrastructure
           command: |
