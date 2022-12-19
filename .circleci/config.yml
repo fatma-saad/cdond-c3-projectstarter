@@ -186,8 +186,7 @@ jobs:
           root: .circleci/ansible
           paths:
             - inventory.txt
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
   deploy-front-end-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -221,8 +220,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible
-            ansible --version
+            apk add --update --no-cache tar gzip ansible aws-cli
 
       - run:
           name: Configure server
@@ -242,7 +240,12 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml           
-
+      - persist_to_workspace:
+          root: .circleci/ansible
+          paths:
+            - inventory.txt
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
   run-migrations:
     docker:
       - image: circleci/node:13.8.0 # safest to use to avoid migration errors
