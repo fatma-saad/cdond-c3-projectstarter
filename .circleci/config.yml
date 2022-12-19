@@ -390,7 +390,7 @@ jobs:
       - run:
           name: Remove old Stack
           command: |
-            export oldWorkflowId=$(curl --insecure  https://kvdb.io/TmyVT1seD1wBzaL4MkbDo5/oldworkflow)
+            export oldWorkflowId=$(curl --insecure  https://kvdb.io/EnYWPspoKVKHgUmBKmDfaV/oldworkflow)
             echo "${oldWorkflowId}"
             aws s3 rm "s3://udapeople-${oldWorkflowId}" --recursive
             aws cloudformation delete-stack --stack-name "udapeople-front-${oldWorkflowId}"
