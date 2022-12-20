@@ -439,13 +439,13 @@ workflows:
           requires: [build-frontend]
       - deploy-back-end-infrastructure:
           requires: [test-backend,scan-backend]
+
       - deploy-front-end-infrastructure:
-          requires: [test-frontend, scan-frontend] 
-      - add-prometheus-node-exporter:
-          requires: [deploy-front-end-infrastructure,deploy-back-end-infrastructure]         
+          requires: [test-frontend, scan-frontend]   
+        
       - configure-infrastructure:
           requires:
-            [add-prometheus-node-exporter]
+          requires: [deploy-front-end-infrastructure,deploy-back-end-infrastructure]    
       - run-migrations:
           requires: [configure-infrastructure]
       - deploy-frontend:
