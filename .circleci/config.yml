@@ -439,7 +439,6 @@ workflows:
           requires: [build-frontend]
       - deploy-back-end-infrastructure:
           requires: [test-backend,scan-backend]
-
       - deploy-front-end-infrastructure:
           requires: [test-frontend, scan-frontend] 
       - add-prometheus-node-exporter:
