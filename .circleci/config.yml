@@ -426,6 +426,7 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory.txt
+            export ANSIBLE_HOST_KEY_CHECKING=False                        
             ansible-playbook -i inventory.txt node-exporter.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
