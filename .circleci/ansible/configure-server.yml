@@ -41,6 +41,3 @@
   roles:
     - configure-server
 
-    - configure-alertmanager
-    - configure-prometheus
-    - configure-prometheus-node-exporter
