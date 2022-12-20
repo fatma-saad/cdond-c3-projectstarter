@@ -444,7 +444,6 @@ workflows:
           requires: [test-frontend, scan-frontend]   
         
       - configure-infrastructure:
-          requires:
           requires: [deploy-front-end-infrastructure,deploy-back-end-infrastructure]    
       - run-migrations:
           requires: [configure-infrastructure]
