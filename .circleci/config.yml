@@ -446,14 +446,10 @@ workflows:
           requires: [build-frontend]
       - deploy-back-end-infrastructure:
           requires: [test-backend,scan-backend]
-          filters:
-            branches:
-              only: [dev]
+
       - deploy-front-end-infrastructure:
           requires: [test-frontend, scan-frontend]
-          filters:
-            branches:
-              only: [dev]
+
       - add-prometheus-node-exporter:
           requires: [deploy-front-end-infrastructure,deploy-back-end-infrastructure]          
       - configure-infrastructure:
