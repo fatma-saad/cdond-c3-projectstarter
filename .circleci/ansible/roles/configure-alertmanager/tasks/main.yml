@@ -1,0 +1,33 @@
+- name: "install alertmanager iin tmp"
+  unarchive:
+    src: https://github.com/prometheus/alertmanager/releases/download/v0.23.0/alertmanager-0.23.0.linux-amd64.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: "move binary to /usr/local/bin."
+  become: true
+  copy:
+    src: /tmp/alertmanager-0.23.0.linux-amd64/alertmanager
+    dest: /usr/local/bin/alertmanager
+    remote_src: yes
+    mode: '0777'
+        
+- name: "add prometheus.yml"
+  become: true
+  copy:
+    src: alertmanager.yml
+    dest: /usr/local/bin/alertmanager.yml   
+        
+- name: "add prometheus configuration."
+  become: true
+  copy:
+    src: alertmanager.service
+    dest: /etc/systemd/system/alertmanager.service
+   
+- name: "enable prometheus service"
+  become: true
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: alertmanager
+    enabled: yes
