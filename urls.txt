@@ -6,7 +6,6 @@ s3: http://udapeople-91c2bdd.s3-website-us-east-1.amazonaws.com/
 
 promehious: http://ec2-44-211-130-155.compute-1.amazonaws.com:9090/graph
 
-backend :http://44.201.148.219:3030/api/status
-
+backend :http://3.94.62.125:3030/api/status
 
 
