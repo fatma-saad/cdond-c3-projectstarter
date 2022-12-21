@@ -305,22 +305,25 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
-      - attach_workspace:
+            apk add --update ansible curl rsync openssh nodejs npm tar gzip
+            ansible --version
+            pip install awscli
+            aws --version      - attach_workspace:
           at: .circleci/ansible/
       - run:
           name: Deploy backend
           command: |
+            pwd
             cd backend
-            npm install
-            npm run build
+            npm i
+            npm run build 
             cd ..
-            tar -C backend -czvf artifact.tar.gz .
-            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
-            cd .circleci/ansible
-            echo "Contents of the inventory.txt file is ------$(cat inventory.txt)"
-            export ANSIBLE_HOST_KEY_CHECKING=False            
+            tar -C backend -czvf artifact-backend.tar.gz .
+            mkdir -p .circleci/ansible/roles/deploy/files/
+            mv artifact-backend.tar.gz .circleci/ansible/roles/deploy/files/
+            cd .circleci/ansible/
+            pwd
+            export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
