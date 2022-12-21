@@ -449,7 +449,9 @@ workflows:
               only: [main]
       - deploy-front-end-infrastructure:
           requires: [test-frontend, scan-frontend]   
-        
+          filters:
+            branches:
+              only: [main]        
       - configure-infrastructure:
           requires: [deploy-front-end-infrastructure,deploy-back-end-infrastructure]    
       - run-migrations:
