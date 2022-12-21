@@ -122,7 +122,8 @@ jobs:
           key: backend-build
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-          
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}          
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -269,7 +270,8 @@ jobs:
             fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-     
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"      
   deploy-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -294,7 +296,8 @@ jobs:
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   deploy-backend:
     docker:
       - image: python:3.9.0-alpine
@@ -305,10 +308,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible curl rsync openssh nodejs npm tar gzip
-            ansible --version
-            pip install awscli
-            aws --version      - attach_workspace:
+            apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
+      - attach_workspace:
           at: .circleci/ansible/
       - run:
           name: Deploy backend
@@ -322,10 +323,12 @@ jobs:
             mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
             cd .circleci/ansible
             echo "Contents of the inventory.txt file is ------$(cat inventory.txt)"
+            export ANSIBLE_HOST_KEY_CHECKING=False            
             ansible-playbook -i inventory.txt deploy-backend.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   smoke-test:
     docker:
       - image: python:3.7-alpine3.16
@@ -355,7 +358,8 @@ jobs:
             if curl ${URL} | grep "Welcome"; then return 0; else return 1; fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
           
   cloudfront-update:
     docker:
@@ -378,7 +382,8 @@ jobs:
             --tags project=udapeople
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
 
   cleanup:
@@ -401,7 +406,28 @@ jobs:
               aws cloudformation delete-stack --stack-name "udapeople-api-${oldWorkflowId}"
               aws cloudformation delete-stack --stack-name "udapeople-front-${oldWorkflowId}"
             fi
-
+  add-prometheus-node-exporter:
+    docker:
+      - image: python:3.7-alpine3.16
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["f1:89:55:90:b0:4f:3f:78:a0:11:57:03:cf:6d:b3:e0"]
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update aws-cli tar gzip ansible nodejs npm
+      - attach_workspace:
+          at: .circleci/ansible/
+      - run:
+          name: Setup Prometheus Node Exporter
+          command: |
+            cd .circleci/ansible
+            cat inventory.txt
+            export ANSIBLE_HOST_KEY_CHECKING=False                        
+            ansible-playbook -i inventory.txt node-exporter.yml
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
   
 workflows:
   default:
@@ -418,9 +444,14 @@ workflows:
           requires: [build-frontend]
       - deploy-back-end-infrastructure:
           requires: [test-backend,scan-backend]
+          filters:
+            branches:
+              only: [main]
       - deploy-front-end-infrastructure:
           requires: [test-frontend, scan-frontend]   
-       
+          filters:
+            branches:
+              only: [main]        
       - configure-infrastructure:
           requires: [deploy-front-end-infrastructure,deploy-back-end-infrastructure]    
       - run-migrations:
@@ -433,4 +464,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
-
+      - cleanup:
+          requires: [cloudfront-update]
