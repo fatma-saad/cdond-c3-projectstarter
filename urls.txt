@@ -1,11 +1,11 @@
-cloud front :https://d38j3q87w6zlnu.cloudfront.net/#/employees
+cloud front :http://d38j3q87w6zlnu.cloudfront.net/#/employees/new
 
 git repo :  https://github.com/fatma-saad/cdond-c3-projectstarter
 
-s3: http://udapeople-91c2bdd.s3-website-us-east-1.amazonaws.com/
+s3: http://udapeople-8d554b6.s3-website-us-east-1.amazonaws.com/#/employees
 
-promehious: http://ec2-44-211-130-155.compute-1.amazonaws.com:9090/graph
+promehious: http://ec2-3-93-13-195.compute-1.amazonaws.com:9090/targets
 
-backend :http://3.94.62.125:3030/api/status
+backend : http://44.211.147.181:3030/api/status
 
 
